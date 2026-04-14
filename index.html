@@ -1,0 +1,467 @@
+```html
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelancer | Modern Vanilla Web Development</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- ZMIENNE CSS --- */
+        :root {
+            --color-bg: #0a0a0c;
+            --color-surface: #16161a;
+            --color-primary: #007aff; 
+            --color-accent: #00d4ff;
+            --color-text: #ffffff;
+            --color-text-muted: #a1a1aa;
+            --font-main: 'Inter', sans-serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* --- RESET I PODSTAWY --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        ul { list-style: none; }
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        button { cursor: pointer; border: none; font-family: inherit; }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* --- NAGŁÓWEK (STICKY HEADER) --- */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1.5rem 0;
+            transition: var(--transition);
+        }
+
+        .header--scrolled {
+            background: rgba(10, 10, 12, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header__nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header__logo {
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -1px;
+        }
+
+        .header__logo span { color: var(--color-primary); }
+
+        .header__list {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .header__link {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+        }
+
+        .header__link:hover { color: var(--color-text); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 122, 255, 0.05) 0%, transparent 70%);
+        }
+
+        .hero__content { max-width: 800px; }
+
+        .hero__title {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -2px;
+        }
+
+        .hero__title span {
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero__subtitle {
+            font-size: 1.1rem;
+            color: var(--color-text-muted);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            font-weight: 600;
+            display: inline-block;
+            transition: var(--transition);
+        }
+
+        .btn--primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .btn--primary:hover {
+            background-color: #0062cc;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 122, 255, 0.2);
+        }
+
+        /* --- SEKCJA: O METODZIE --- */
+        .section {
+            padding: 8rem 0;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .reveal {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        .section__title {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--color-surface);
+            padding: 2.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-5px);
+        }
+
+        .card__icon {
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .card__title { margin-bottom: 1rem; font-size: 1.25rem; }
+        .card__text { color: var(--color-text-muted); font-size: 0.95rem; }
+
+        /* --- CENA I PROCES --- */
+        .pricing-note {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2.5rem;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .pricing-note h3 { color: var(--color-primary); margin-bottom: 0.75rem; }
+
+        .extra-costs {
+            max-width: 800px;
+            margin: 2rem auto 0;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--color-primary);
+        }
+
+        .extra-costs h4 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--color-text); }
+        .extra-costs p { font-size: 0.85rem; color: var(--color-text-muted); }
+
+        .process {
+            background-color: var(--color-surface);
+            border-radius: 12px;
+            padding: 3rem;
+            margin-top: 2rem;
+        }
+
+        .process__info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .useme-badge {
+            background: rgba(0, 122, 255, 0.1);
+            border: 1px solid var(--color-primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            max-width: 400px;
+        }
+
+        .useme-badge h4 { color: var(--color-primary); margin-bottom: 0.5rem; }
+
+        /* --- KONTAKT --- */
+        .contact-box {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .contact-details {
+            margin-bottom: 3rem;
+        }
+
+        .contact-item {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            font-weight: 600;
+            display: block;
+            margin: 0.5rem 0;
+            color: var(--color-text);
+        }
+
+        .contact-item:hover { color: var(--color-primary); }
+
+        .social-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            padding: 0.75rem 1.5rem;
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .social-link:hover {
+            border-color: var(--color-primary);
+            background: rgba(0, 122, 255, 0.05);
+            transform: translateY(-3px);
+        }
+
+        /* --- STOPKA --- */
+        .footer {
+            padding: 4rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* --- RWD --- */
+        @media (max-width: 768px) {
+            .header__list { display: none; }
+            .hero__title { font-size: 2.8rem; }
+            .section { padding: 4rem 0; }
+            .process__info { flex-direction: column; text-align: center; }
+            .social-grid { gap: 0.75rem; }
+            .pricing-note { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAGŁÓWEK -->
+    <header class="header" id="header">
+        <div class="container header__nav">
+            <a href="#" class="header__logo">DEV<span>.</span>CORE</a>
+            <ul class="header__list">
+                <li><a href="#metoda" class="header__link">O metodzie</a></li>
+                <li><a href="#proces" class="header__link">Proces i Cena</a></li>
+                <li><a href="#kontakt" class="header__link">Kontakt</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container hero__content">
+            <h1 class="hero__title">Koduję <span>szybkość</span>,<br>nie tylko strony.</h1>
+            <p class="hero__subtitle">
+                Zapomnij o ciężkich szablonach WordPress. Tworzę lekkie, bezpieczne i ultra-szybkie strony WWW pisane od zera w czystym kodzie.
+            </p>
+            <a href="#kontakt" class="btn btn--primary">Rozpocznij projekt</a>
+        </div>
+    </section>
+
+    <!-- O METODZIE -->
+    <section class="section container" id="metoda">
+        <h2 class="section__title">Dlaczego Hand-coded?</h2>
+        <div class="grid">
+            <div class="card">
+                <span class="card__icon">⚡</span>
+                <h3 class="card__title">Szybkość 100/100</h3>
+                <p class="card__text">Brak zbędnych wtyczek oznacza błyskawiczne ładowanie. Twoi klienci nie lubią czekać.</p>
+            </div>
+            <div class="card">
+                <span class="card__icon">🛡️</span>
+                <h3 class="card__title">Pełne Bezpieczeństwo</h3>
+                <p class="card__text">Czysty kod jest odporny na popularne ataki wymierzone w systemy CMS jak WordPress.</p>
+            </div>
+            <div class="card">
+                <span class="card__icon">📈</span>
+                <h3 class="card__title">SEO Friendly</h3>
+                <p class="card__text">Wyszukiwarki kochają semantyczny kod i wydajność. Twoja pozycja w Google to doceni.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROCES & CENA -->
+    <section class="section container" id="proces">
+        <h2 class="section__title">Wycena i Proces</h2>
+        
+        <div class="pricing-note">
+            <h3>Indywidualne podejście do ceny</h3>
+            <p style="color: var(--color-text-muted); max-width: 800px; margin: 0 auto;">
+                Każdy projekt jest unikalny. Koszt realizacji zależy od stopnia skomplikowania kodu, liczby podstron oraz wymaganych funkcjonalności. Tworzę rozwiązania "szyte na miarę", dlatego wycenę przygotowuję po zapoznaniu się z Twoimi potrzebami.
+            </p>
+
+            <div class="extra-costs">
+                <h4>Ważna informacja o kosztach zewnętrznych</h4>
+                <p>
+                    Cena mojej usługi obejmuje projekt i napisanie kodu strony. Należy jednak pamiętać o stałych kosztach zewnętrznych niezbędnych do funkcjonowania witryny w sieci: 
+                    <strong>zakup i przedłużenie domeny</strong> (Twojego adresu WWW), <strong>utrzymanie hostingu</strong> (miejsca na serwerze) oraz <strong>certyfikat SSL</strong>. Chętnie pomogę Ci dobrać najkorzystniejszych dostawców tych usług.
+                </p>
+            </div>
+        </div>
+
+        <div class="process">
+            <div class="process__info">
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Etapy pracy:</h3>
+                    <ul style="color: var(--color-text-muted);">
+                        <li>1. Brief i analiza potrzeb</li>
+                        <li>2. Projektowanie UI/UX</li>
+                        <li>3. Kodowanie (Vanilla JS/CSS)</li>
+                        <li>4. Testy i wdrożenie</li>
+                    </ul>
+                </div>
+                <div class="useme-badge">
+                    <h4>Bezpieczne rozliczenie</h4>
+                    <p style="font-size: 0.9rem; color: var(--color-text-muted);">
+                        Wystawiam <strong>faktury VAT</strong> poprzez system <strong>Useme</strong>. Zyskujesz gwarancję terminowości i pełne bezpieczeństwo transakcji bez zbędnych formalności.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KONTAKT -->
+    <section class="section container" id="kontakt">
+        <h2 class="section__title">Zbudujmy coś razem</h2>
+        <div class="contact-box">
+            <div class="contact-details">
+                <a href="mailto:kontakt@twojadomena.pl" class="contact-item">kontakt@twojadomena.pl</a>
+                <a href="tel:+48000000000" class="contact-item">+48 000 000 000</a>
+            </div>
+            
+            <p style="margin-bottom: 1.5rem; color: var(--color-text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px;">Znajdziesz mnie na:</p>
+            
+            <div class="social-grid">
+                <a href="#" class="social-link" target="_blank">
+                    <span>Instagram</span>
+                </a>
+                <a href="#" class="social-link" target="_blank">
+                    <span>Facebook</span>
+                </a>
+                <a href="#" class="social-link" target="_blank">
+                    <span>TikTok</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- STOPKA -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 DEVCORE. Realizacja w czystym kodzie. Rozliczenia przez Useme.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 1. STICKY HEADER
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('header--scrolled');
+            } else {
+                header.classList.remove('header--scrolled');
+            }
+        });
+
+        // 2. REVEAL SECTIONS ON SCROLL
+        const sections = document.querySelectorAll('.section');
+        const revealSection = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal');
+                    observer.unobserve(entry.target); 
+                }
+            });
+        };
+
+        const sectionObserver = new IntersectionObserver(revealSection, {
+            root: null,
+            threshold: 0.15
+        });
+
+        sections.forEach(section => {
+            sectionObserver.observe(section);
+        });
+    </script>
+</body>
+</html>
+
+```
